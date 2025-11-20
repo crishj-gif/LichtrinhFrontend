@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lộ Trình Frontend Master 2025-2026 (Start 20/11)</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* * ==========================================================================
+         * PHẦN 1: CORE VARIABLES & RESET (CẤU HÌNH GIAO DIỆN)
+         * ==========================================================================
+         */
+        :root {
+            /* --- Color Palette: Dark Mode Optimized --- */
+            --bg-body: #0f172a;       /* Deep Slate Blue */
+            --bg-card: #1e293b;       /* Lighter Slate */
+            --bg-element: #334155;    /* Interactable Elements */
+            
+            /* Text Colors */
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-highlight: #38bdf8;
+
+            /* State Colors */
+            --color-study: #4ade80;   /* Green for Study */
+            --color-study-bg: rgba(74, 222, 128, 0.15);
+            
+            --color-review: #facc15;  /* Yellow for Review */
+            --color-review-bg: rgba(250, 204, 21, 0.15);
+            
+            --color-exam: #f43f5e;    /* Red for Exam */
+            --color-exam-bg: rgba(244, 63, 94, 0.15);
+            
+            --color-tet: #ef4444;     /* Tet Holiday Red */
+            --color-tet-bg: rgba(239, 68, 68, 0.1);
+            
+            --color-prep: #a78bfa;    /* Purple for Preparation */
+            --color-prep-bg: rgba(167, 139, 250, 0.15);
+            
+            --color-accent: #0ea5e9;  /* Sky Blue Accent */
+            
+            /* Dimensions & Spacing */
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            
+            /* Shadows & Effects */
+            --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+            --shadow-glow: 0 0 15px rgba(56, 189, 248, 0.3);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* * ==========================================================================
+         * PHẦN 2: SNOWFALL EFFECT (HIỆU ỨNG TUYẾT RƠI)
+         * ==========================================================================
+         */
+        #snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* QUAN TRỌNG: Để tuyết không chặn click chuột */
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: #fff;
+            font-size: 1em;
+            font-family: Arial;
+            text-shadow: 0 0 5px #000;
+            animation-name: fall, shake;
+            animation-duration: 10s, 3s;
+            animation-timing-function: linear, ease-in-out;
+            animation-iteration-count: infinite, infinite;
+            animation-play-state: running, running;
+            opacity: 0.8;
+        }
+
+        @keyframes fall {
+            0% { top: -10%; }
+            100% { top: 100%; }
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0px); }
+            50% { transform: translateX(80px); }
+            100% { transform: translateX(0px); }
+        }
+
+        /* Các biến thể tuyết để tự nhiên hơn */
+        .snowflake:nth-of-type(2n) { animation-duration: 12s, 4s; opacity: 0.5; font-size: 0.8em; }
+        .snowflake:nth-of-type(3n) { animation-duration: 8s, 3s; opacity: 0.7; font-size: 1.2em; }
+        .snowflake:nth-of-type(5n) { animation-duration: 15s, 5s; opacity: 0.3; font-size: 0.5em; }
+
+
+        /* * ==========================================================================
+         * PHẦN 3: MAIN LAYOUT & COMPONENTS
+         * ==========================================================================
+         */
+        
+        /* Header Section */
+        header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--bg-element);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: var(--text-highlight);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .date-badge {
+            background: var(--bg-element);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Legend (Chú thích) */
+        .legend-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px auto;
+            padding: 20px;
+            max-width: 1200px;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--bg-element);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        /* * ==========================================================================
+         * PHẦN 4: CALENDAR GRID SYSTEM (HỆ THỐNG LỊCH)
+         * ==========================================================================
+         */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            padding: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .month-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            border: 1px solid var(--bg-element);
+            box-shadow: var(--shadow-card);
+            transition: var(--transition);
+        }
+
+        .month-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--text-highlight);
+        }
+
+        .month-header {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--bg-element);
+        }
+
+        /* Days Grid - Fixed Alignment */
+        .days-header, .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr); /* 7 cột bằng nhau */
+            gap: 8px;
+        }
+
+        .day-name {
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            padding-bottom: 10px;
+        }
+
+        .day-name.weekend { color: var(--color-exam); }
+
+        .day-cell {
+            aspect-ratio: 1/1; /* Ô vuông hoàn hảo */
+            border-radius: var(--radius-sm);
+            background: var(--bg-body);
+            border: 1px solid var(--bg-element);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-cell.empty {
+            background: transparent;
+            border: none;
+            cursor: default;
+        }
+
+        .day-cell:not(.empty):hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        .day-number {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .day-note {
+            font-size: 0.6rem;
+            text-align: center;
+            padding: 2px 4px;
+            border-radius: 4px;
+            width: 90%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Cell States */
+        .is-study {
+            background-color: var(--color-study-bg);
+            border-color: var(--color-study);
+            color: var(--color-study);
+        }
+        .is-study .day-note { background: rgba(0,0,0,0.2); }
+
+        .is-review {
+            background-color: var(--color-review-bg);
+            border-color: var(--color-review);
+            color: var(--color-review);
+        }
+
+        .is-exam {
+            background-color: var(--color-exam-bg);
+            border-color: var(--color-exam);
+            color: var(--color-exam);
+            font-weight: bold;
+        }
+
+        .is-tet {
+            background-color: var(--color-tet-bg);
+            border-color: var(--color-tet);
+            color: var(--color-tet);
+        }
+
+        .is-prep { 
+            background-color: var(--color-prep-bg); 
+            border-color: var(--color-prep); 
+            color: var(--color-prep); 
+        }
+
+        /* Hôm nay */
+        .day-cell.today {
+            border: 2px solid var(--text-highlight);
+            box-shadow: 0 0 15px var(--text-highlight);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+        }
+
+        /* * ==========================================================================
+         * PHẦN 5: MODAL & POPUP (GIAO DIỆN THÔNG BÁO)
+         * ==========================================================================
+         */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-container {
+            background: var(--bg-card);
+            width: 90%;
+            max-width: 600px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--text-highlight);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transform: scale(0.8);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .modal-overlay.active .modal-container {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--bg-element), var(--bg-card));
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--text-highlight);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-btn:hover { color: #fff; }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .info-row {
+            margin-bottom: 20px;
+        }
+        .info-label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .info-content {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .highlight-box {
+            background: rgba(56, 189, 248, 0.1);
+            border-left: 4px solid var(--text-highlight);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 10px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid var(--bg-element);
+        }
+
+        .btn-primary {
+            background: var(--text-highlight);
+            color: #000;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary:hover {
+            background: #fff;
+            box-shadow: 0 0 20px var(--text-highlight);
+        }
+
+        /* Styles cho Modal Startup riêng */
+        #startupModal .modal-container {
+            border-color: var(--color-study);
+        }
+        #startupModal .modal-title {
+            color: var(--color-study);
+        }
+        #startupModal .highlight-box {
+            background: var(--color-study-bg);
+            border-color: var(--color-study);
+        }
+        #startupModal .btn-primary {
+            background: var(--color-study);
+        }
+
+        /* Footer Advice */
+        .advice-section {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 30px;
+            background: linear-gradient(to right, rgba(56, 189, 248, 0.1), transparent);
+            border-left: 5px solid var(--text-highlight);
+            border-radius: var(--radius-md);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="snow-container"></div>
+
+    <header>
+        <h1><i class="fas fa-code"></i> Lịch học Front-end của Trường Sơn</h1>
+        <div class="date-badge">
+            <i class="far fa-clock"></i>
+            <span id="currentDateDisplay">Đang tải...</span>
+        </div>
+    </header>
+
+    <div class="legend-container">
+        <div class="legend-item"><div class="dot" style="background: var(--color-study)"></div> Học Code (T7/CN)</div>
+        <div class="legend-item"><div class="dot" style="background: var(--color-review)"></div> Ôn Tập (T2-T6)</div>
+        <div class="legend-item"><div class="dot" style="background: var(--color-prep)"></div> Chuẩn bị</div>
+        <div class="legend-item"><div class="dot" style="background: var(--color-exam)"></div> Thi/Ôn Thi</div>
+        <div class="legend-item"><div class="dot" style="border: 2px solid var(--text-highlight)"></div> Hôm Nay</div>
+        <div class="legend-item"><div class="dot" style="background: var(--color-tet)"></div> Nghỉ Tết</div>
+    </div>
+
+    <div id="calendarRoot" class="calendar-wrapper">
+        </div>
+
+    <div class="advice-section">
+        <h3 style="color: var(--text-highlight); margin-bottom: 15px;"><i class="fas fa-lightbulb"></i> Chiến Thuật Học Tập:</h3>
+        <ul style="padding-left: 20px; color: var(--text-secondary);">
+            <li style="margin-bottom: 10px;"><strong>Thứ 7 & Chủ Nhật:</strong> Là thời gian vàng để nạp kiến thức mới. Hãy tắt điện thoại và tập trung sâu.</li>
+            <li style="margin-bottom: 10px;"><strong>Thứ 2 - Thứ 6:</strong> Đừng học bài mới. Hãy dành 30-60p mỗi ngày để code lại (Refactor) những gì đã học cuối tuần trước.</li>
+            <li style="margin-bottom: 10px;"><strong>Mùa Thi:</strong> Trang web sẽ tự động chặn lịch học code vào tuần thi. Hãy tôn trọng lịch thi đại học của bạn.</li>
+        </ul>
+    </div>
+
+    <div id="dayModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-calendar-day"></i> Chi Tiết Lịch Trình</div>
+                <button class="close-btn" onclick="closeModal('dayModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-row">
+                    <span class="info-label">Ngày</span>
+                    <div class="info-content" id="modalDate">...</div>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Nhiệm vụ chính</span>
+                    <div class="info-content" id="modalTask" style="font-weight: bold;">...</div>
+                </div>
+                <div class="highlight-box">
+                    <span class="info-label" style="color: inherit;">Yêu cầu thực hành:</span>
+                    <div id="modalDetail">...</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="closeModal('dayModal')">Đã Hiểu</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="startupModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-rocket"></i> NHIỆM VỤ HÔM NAY</div>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center; margin-bottom: 20px; color: var(--text-secondary);">
+                    Chào mừng trở lại! Dưới đây là lộ trình dành cho bạn:
+                </p>
+                <div class="info-row" style="text-align: center;">
+                    <h2 id="startupDate" style="color: #fff; font-size: 2rem;">...</h2>
+                    <div id="startupStatus" style="margin-top: 10px; display: inline-block; padding: 5px 15px; border-radius: 15px; background: #333;">...</div>
+                </div>
+                <div class="highlight-box">
+                    <div id="startupContent" style="font-size: 1.2rem; text-align: center;">...</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="closeModal('startupModal')">BẮT ĐẦU NGAY <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    /* * ==========================================================================
+     * PHẦN JS 1: DỮ LIỆU & CẤU HÌNH
+     * ==========================================================================
+     */
+    
+    // Ngày bắt đầu khóa học (Thứ Năm, 20/11/2025)
+    const START_DATE = new Date(2025, 10, 20); 
+    
+    // Lấy ngày thực tế hiện tại
+    const REAL_TODAY = new Date();
+
+    // LOGIC QUAN TRỌNG: Nếu ngày thực tế chưa đến ngày học, ta "Giả lập" là ngày bắt đầu
+    // để người dùng thấy Web chạy. Nếu đã qua ngày bắt đầu, dùng ngày thực tế.
+    const TODAY = (REAL_TODAY < START_DATE) ? START_DATE : REAL_TODAY;
+
+    // Danh sách môn thi (Tháng 0-11)
+    const EXAMS = [
+        { date: new Date(2025, 11, 19), name: "Thi Vật Lý" },
+        { date: new Date(2025, 11, 26), name: "Thi KTLT" },
+        { date: new Date(2026, 0, 5), name: "Thi Logic học" },
+        { date: new Date(2026, 0, 8), name: "Thi KTCT" },
+        { date: new Date(2026, 0, 12), name: "Thi CNXHKH" },
+        { date: new Date(2026, 0, 15), name: "Thi Giải tích 2" }
+    ];
+
+    // Nghỉ Tết
+    const TET_HOLIDAY = {
+        start: new Date(2026, 1, 10),
+        end: new Date(2026, 1, 22)
+    };
+
+    // Dữ liệu bài học (Core)
+    const LESSONS = [
+        { id: 4, mod: "CSS", title: "CSS Selectors & Colors", task: "Thực hành đổi màu, font chữ cho CV cá nhân.", review: "Ôn HTML tags" },
+        { id: 5, mod: "CSS", title: "Box Model & Margin/Padding", task: "Vẽ các ô vuông lồng nhau căn chỉnh.", review: "Ôn CSS Selector" },
+        { id: 6, mod: "CSS", title: "Flexbox Layout", task: "Dàn trang menu ngang và chia cột.", review: "Ôn Box Model" },
+        { id: 7, mod: "CSS", title: "Position & Background", task: "Làm banner có chữ đè lên ảnh.", review: "Ôn Flexbox" },
+        { id: 8, mod: "CSS", title: "Thực hành tổng hợp CSS", task: "Hoàn thiện giao diện Profile cá nhân.", review: "Ôn Position" },
+        { id: 9, mod: "BS4", title: "Bootstrap Grid System", task: "Chia layout bằng class col-md-*.", review: "Ôn CSS Layout" },
+        { id: 10, mod: "BS4", title: "Bootstrap Components", task: "Dùng Navbar, Modal, Card.", review: "Ôn Grid System" },
+        { id: 11, mod: "BS4", title: "Chữa Project Mini 1", task: "Refactor code CSS thuần sang Bootstrap.", review: "Xem lại code cũ" },
+        { id: 12, mod: "BS4", title: "Responsive Mobile", task: "Tối ưu hiển thị trên điện thoại.", review: "Ôn Media Query" },
+        { id: 13, mod: "Git", title: "Git & Github Basic", task: "Tạo repo, commit, push code.", review: "Cài đặt Git" },
+        { id: 14, mod: "Git", title: "Deploy Github Pages", task: "Đưa web cá nhân lên online.", review: "Ôn lệnh Git cơ bản" },
+        { id: 15, mod: "JS", title: "Biến & Kiểu dữ liệu", task: "Khai báo biến, console.log.", review: "Tư duy lập trình" },
+        { id: 16, mod: "JS", title: "Hàm & Điều kiện", task: "Viết hàm tính điểm TB.", review: "Biến trong JS" },
+        { id: 17, mod: "JS", title: "Mảng & Vòng lặp", task: "Duyệt danh sách sinh viên.", review: "Hàm if/else" },
+        { id: 18, mod: "JS", title: "Object & Method", task: "Tạo object thông tin bản thân.", review: "Mảng (Array)" },
+        { id: 19, mod: "JS", title: "DOM Manipulation 1", task: "Đổi màu chữ bằng JS.", review: "Object" },
+        { id: 20, mod: "JS", title: "DOM Events", task: "Bắt sự kiện click nút bấm.", review: "DOM Selectors" },
+        { id: 21, mod: "JS", title: "ES6+ Features", task: "Arrow Function, Destructuring.", review: "Hàm thường" },
+        { id: 22, mod: "JS", title: "Promise & Async", task: "Hiểu về bất đồng bộ.", review: "Callback function" },
+        { id: 23, mod: "JS", title: "Fetch API", task: "Gọi API lấy dữ liệu user.", review: "Promise" },
+        { id: 24, mod: "Tool", title: "NPM & SASS", task: "Cài node modules, viết SCSS.", review: "CSS thuần" },
+        { id: 25, mod: "Proj", title: "Project Mini 3 (MP3)", task: "Code giao diện nghe nhạc.", review: "Tổng hợp JS" },
+        { id: 26, mod: "Proj", title: "Form Validation", task: "Kiểm tra lỗi nhập liệu.", review: "Regex cơ bản" },
+        { id: 27, mod: "React", title: "React Intro & JSX", task: "Tạo project Vite đầu tiên.", review: "ES6+" },
+        { id: 28, mod: "React", title: "Components & Props", task: "Chia nhỏ giao diện Header/Footer.", review: "JSX Syntax" },
+        { id: 29, mod: "React", title: "State (useState)", task: "Làm ứng dụng đếm số.", review: "Props" },
+        { id: 30, mod: "React", title: "Effect (useEffect)", task: "Gọi API trong React.", review: "Lifecycle" },
+        { id: 31, mod: "React", title: "Custom Hooks", task: "Tách logic tái sử dụng.", review: "Hooks cơ bản" },
+        { id: 32, mod: "React", title: "Context API", task: "Làm Dark/Light mode.", review: "State Management" },
+        { id: 33, mod: "React", title: "Thực hành Todo App", task: "Full CRUD Todo List.", review: "Tổng hợp React" },
+        { id: 34, mod: "Redux", title: "Redux Toolkit", task: "Setup Store global.", review: "Context API" },
+        { id: 35, mod: "Router", title: "React Router", task: "Chuyển trang không reload.", review: "SPA concept" },
+        { id: 36, mod: "Shop", title: "Shopping Cart Logic", task: "Thêm/xóa giỏ hàng Redux.", review: "Redux Actions" },
+        { id: 37, mod: "Antd", title: "Ant Design UI", task: "Dùng Button, Layout Antd.", review: "CSS Frameworks" },
+        { id: 38, mod: "Antd", title: "Table & Data", task: "Hiển thị bảng dữ liệu user.", review: "Array map" },
+        { id: 39, mod: "Antd", title: "Form Handling", task: "Form đăng nhập xịn xò.", review: "Controlled Comp" },
+        { id: 40, mod: "Antd", title: "Feedback UI", task: "Modal, Notification, Message.", review: "UX/UI" },
+        { id: 41, mod: "Antd", title: "Charts", task: "Vẽ biểu đồ thống kê.", review: "Data visualization" },
+        { id: 42, mod: "Final", title: "Setup Project Cuối", task: "Phân tích, khởi tạo source.", review: "Cấu trúc thư mục" },
+        { id: 43, mod: "Final", title: "CV & Phỏng vấn", task: "Viết CV, mock interview.", review: "Soft skills" },
+        { id: 44, mod: "Final", title: "Bảo vệ đồ án", task: "Hoàn thiện và deploy.", review: "Full stack flow" }
+    ];
+
+    // Tạo thêm 20 bài mở rộng để lấp đầy lịch 2026
+    for(let i=1; i<=20; i++) {
+        LESSONS.push({
+            id: 44+i, 
+            mod: "Adv", 
+            title: `Advanced Topic ${i}`, 
+            task: "Nghiên cứu NextJS và TypeScript.", 
+            review: "React Advanced"
+        });
+    }
+
+    /* * ==========================================================================
+     * PHẦN JS 2: HÀM XỬ LÝ NGÀY THÁNG & SỰ KIỆN
+     * ==========================================================================
+     */
+
+    function isSameDate(d1, d2) {
+        return d1.getDate() === d2.getDate() && 
+               d1.getMonth() === d2.getMonth() && 
+               d1.getFullYear() === d2.getFullYear();
+    }
+
+    // Kiểm tra xem một ngày có nằm trong tuần thi hay không (T2 -> CN)
+    function isExamWeek(date) {
+        // Tìm ngày thứ 2 của tuần chứa 'date'
+        const day = date.getDay(); 
+        const diff = date.getDate() - day + (day == 0 ? -6 : 1); 
+        const monday = new Date(date);
+        monday.setDate(diff);
+        monday.setHours(0,0,0,0);
+        
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        sunday.setHours(23,59,59,999);
+
+        return EXAMS.some(exam => exam.date >= monday && exam.date <= sunday);
+    }
+
+    function getExamByDate(date) {
+        return EXAMS.find(e => isSameDate(e.date, date));
+    }
+
+    function isTetRange(date) {
+        return date >= TET_HOLIDAY.start && date <= TET_HOLIDAY.end;
+    }
+
+    // Tạo bộ nhớ tạm để lưu dữ liệu ngày
+    let scheduleData = {}; 
+
+    /* * ==========================================================================
+     * PHẦN JS 3: RENDER LỊCH (CORE LOGIC)
+     * ==========================================================================
+     */
+    function renderCalendar() {
+        const wrapper = document.getElementById('calendarRoot');
+        wrapper.innerHTML = '';
+        scheduleData = {}; // Reset data
+
+        let currentDate = new Date(START_DATE);
+        let lessonIdx = 0;
+        
+        // Render tối đa 12 tháng hoặc đến khi hết bài học
+        for (let m = 0; m < 15; m++) { 
+            // Tạo khung tháng
+            const monthCard = document.createElement('div');
+            monthCard.className = 'month-card';
+
+            // Header tháng
+            const monthName = new Intl.DateTimeFormat('vi-VN', { month: 'long', year: 'numeric' }).format(currentDate);
+            monthCard.innerHTML = `<div class="month-header">${monthName}</div>`;
+
+            // Header thứ
+            const daysGrid = document.createElement('div');
+            daysGrid.className = 'days-grid';
+            ['T2','T3','T4','T5','T6','T7','CN'].forEach(d => {
+                const dayName = document.createElement('div');
+                dayName.className = 'day-name' + (d === 'T7' || d === 'CN' ? ' weekend' : '');
+                dayName.innerText = d;
+                daysGrid.appendChild(dayName);
+            });
+
+            // Tính toán ngày bắt đầu của tháng hiện tại trong vòng lặp
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const firstDayOfMonth = new Date(year, month, 1);
+            const lastDayOfMonth = new Date(year, month + 1, 0);
+            
+            // Padding cells (Ngày trống đầu tháng)
+            // getDay(): CN=0, T2=1... T7=6. Cần chuyển: T2=0... CN=6
+            let startDayIndex = firstDayOfMonth.getDay() - 1; 
+            if (startDayIndex === -1) startDayIndex = 6;
+
+            for (let i = 0; i < startDayIndex; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'day-cell empty';
+                daysGrid.appendChild(empty);
+            }
+
+            // Render các ngày trong tháng
+            for (let d = 1; d <= lastDayOfMonth.getDate(); d++) {
+                const dateObj = new Date(year, month, d);
+                const dayCell = document.createElement('div');
+                dayCell.className = 'day-cell';
+                dayCell.innerHTML = `<div class="day-number">${d}</div>`;
+
+                // Kiểm tra sự kiện
+                const isToday = isSameDate(dateObj, TODAY);
+                if (isToday) dayCell.classList.add('today');
+
+                const exam = getExamByDate(dateObj);
+                const inExamWeek = isExamWeek(dateObj);
+                const inTet = isTetRange(dateObj);
+                const dayOfWeek = dateObj.getDay();
+                const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6); // 0=CN, 6=T7
+
+                let cellData = { date: dateObj, type: 'normal', info: null };
+
+                // Logic ưu tiên hiển thị
+                if (exam) {
+                    dayCell.classList.add('is-exam');
+                    dayCell.innerHTML += `<div class="day-note">THI: ${exam.name}</div>`;
+                    cellData.type = 'exam';
+                    cellData.info = exam;
+                } 
+                else if (inTet) {
+                    dayCell.classList.add('is-tet');
+                    dayCell.innerHTML += `<div class="day-note">Nghỉ Tết</div>`;
+                    cellData.type = 'tet';
+                    cellData.info = { title: "Nghỉ Tết Nguyên Đán" };
+                }
+                else if (inExamWeek) {
+                    if (isWeekend) {
+                        // Cuối tuần trong tuần thi -> Nghỉ Code
+                        dayCell.classList.add('is-exam'); // Mượn màu exam cho nổi
+                        dayCell.style.opacity = "0.6";
+                        dayCell.innerHTML += `<div class="day-note">Nghỉ ôn thi</div>`;
+                        cellData.type = 'break';
+                        cellData.info = { title: "Dừng học code để ôn thi Đại học" };
+                    } else {
+                        // Ngày thường tuần thi -> Ôn thi
+                        dayCell.classList.add('is-review');
+                        dayCell.innerHTML += `<div class="day-note">Ôn thi ĐH</div>`;
+                        cellData.type = 'review_exam';
+                        cellData.info = { title: "Ôn tập các môn đại cương" };
+                    }
+                }
+                else if (isWeekend) {
+                    // Ngày học chính
+                    // Logic mới: Chỉ bắt đầu học từ ngày START_DATE trở đi
+                    if (dateObj < START_DATE) {
+                         // Ngày nghỉ trước khi bắt đầu khóa học
+                    }
+                    else if (lessonIdx < LESSONS.length) {
+                        const lesson = LESSONS[lessonIdx];
+                        dayCell.classList.add('is-study');
+                        dayCell.innerHTML += `<div class="day-note">${lesson.mod} ${lesson.id}</div>`;
+                        cellData.type = 'study';
+                        cellData.info = lesson;
+                        lessonIdx++; // Chỉ tăng bài học khi render xong 1 ngày weekend
+                    }
+                }
+                else {
+                    // Ngày thường
+                    if (dateObj >= START_DATE && lessonIdx > 0) {
+                        dayCell.classList.add('is-review');
+                        // Lấy bài học vừa học xong (nếu có)
+                        const prevLesson = lessonIdx > 0 ? LESSONS[lessonIdx - 1] : null;
+                        if (prevLesson) {
+                            dayCell.innerHTML += `<div class="day-note">Ôn tập</div>`;
+                            cellData.type = 'review';
+                            cellData.info = prevLesson;
+                        }
+                    } else if (dateObj >= new Date(2025, 10, 20) && dateObj < new Date(2025, 10, 22)) {
+                        // Đặc biệt: 20/11 và 21/11 là ngày chuẩn bị
+                        dayCell.classList.add('is-prep');
+                        dayCell.innerHTML += `<div class="day-note">Chuẩn bị</div>`;
+                        cellData.type = 'prep';
+                        cellData.info = {title: "Chuẩn bị môi trường", review: "Cài đặt VSCode, Nodejs"};
+                    }
+                }
+
+                // Lưu data vào bộ nhớ để dùng khi click
+                const dataId = `d_${dateObj.getTime()}`;
+                dayCell.dataset.id = dataId;
+                scheduleData[dataId] = cellData;
+
+                // Sự kiện Click
+                dayCell.onclick = () => openDayModal(dataId);
+
+                daysGrid.appendChild(dayCell);
+            }
+
+            monthCard.appendChild(daysGrid);
+            wrapper.appendChild(monthCard);
+
+            // Tăng tháng cho vòng lặp
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            currentDate.setDate(1); // Reset về ngày 1 tháng sau
+            
+            // Break nếu hết bài học và đã render hết tháng hiện tại
+            if (lessonIdx >= LESSONS.length) break; 
+        }
+    }
+
+    /* * ==========================================================================
+     * PHẦN JS 4: MODAL LOGIC & STARTUP
+     * ==========================================================================
+     */
+    
+    // Mở Modal Chi Tiết Ngày
+    function openDayModal(id) {
+        const data = scheduleData[id];
+        if (!data) return;
+
+        const modal = document.getElementById('dayModal');
+        const dateStr = data.date.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        
+        document.getElementById('modalDate').innerText = dateStr;
+        const elTask = document.getElementById('modalTask');
+        const elDetail = document.getElementById('modalDetail');
+
+        if (data.type === 'study') {
+            elTask.innerText = `HỌC BÀI MỚI: ${data.info.title}`;
+            elDetail.innerText = data.info.task;
+        } else if (data.type === 'review') {
+            elTask.innerText = `ÔN TẬP: ${data.info.title}`;
+            elDetail.innerText = `Nhiệm vụ: ${data.info.review}`;
+        } else if (data.type === 'exam') {
+            elTask.innerText = `KỲ THI QUAN TRỌNG`;
+            elDetail.innerText = `Môn thi: ${data.info.name}. Chúc bạn thi tốt!`;
+        } else if (data.type === 'tet') {
+            elTask.innerText = `NGHỈ TẾT NGUYÊN ĐÁN`;
+            elDetail.innerText = `Vui xuân đón tết, tạm gác code sang một bên!`;
+        } else if (data.type === 'break' || data.type === 'review_exam') {
+            elTask.innerText = `TUẦN THI CỬ`;
+            elDetail.innerText = `Tập trung ôn thi các môn trên trường.`;
+        } else if (data.type === 'prep') {
+            elTask.innerText = `CHUẨN BỊ MÔI TRƯỜNG`;
+            elDetail.innerText = `Nhiệm vụ: ${data.info.review}`;
+        } else {
+            elTask.innerText = `NGÀY NGHỈ / TỰ HỌC`;
+            elDetail.innerText = `Không có lịch trình cụ thể.`;
+        }
+
+        modal.classList.add('active');
+    }
+
+    // Mở Modal Startup (Hôm Nay)
+    function initStartupPopup() {
+        // Tìm data của ngày hôm nay (TODAY)
+        // Vì scheduleData dùng key là timestamp, ta cần tìm đúng key
+        // Tuy nhiên, cách nhanh nhất là tìm trong mảng LESSONS hoặc logic render lại
+        // Ở đây ta dùng mảng đã render scheduleData. Ta cần key khớp với TODAY.
+        
+        // Chuyển TODAY về 0h00 để khớp key
+        const todayKeyCheck = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate()).getTime();
+        const todayData = scheduleData[`d_${todayKeyCheck}`];
+
+        const modal = document.getElementById('startupModal');
+        const dateStr = TODAY.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long' });
+        
+        document.getElementById('startupDate').innerText = dateStr;
+        const elStatus = document.getElementById('startupStatus');
+        const elContent = document.getElementById('startupContent');
+        
+        // Mặc định
+        elStatus.innerText = "Không có lịch";
+        elContent.innerText = "Hôm nay bạn có thể nghỉ ngơi hoặc tự ôn luyện.";
+        elStatus.style.backgroundColor = "#333";
+
+        if (todayData) {
+            if (todayData.type === 'study') {
+                elStatus.innerText = "HỌC BÀI MỚI";
+                elStatus.style.backgroundColor = "var(--color-study)";
+                elStatus.style.color = "#000";
+                elContent.innerHTML = `Bài học: <strong>${todayData.info.title}</strong><br>${todayData.info.task}`;
+            } 
+            else if (todayData.type === 'review') {
+                elStatus.innerText = "ÔN TẬP";
+                elStatus.style.backgroundColor = "var(--color-review)";
+                elStatus.style.color = "#000";
+                elContent.innerHTML = `Ôn lại: <strong>${todayData.info.title}</strong><br>Yêu cầu: ${todayData.info.review}`;
+            }
+            else if (todayData.type === 'exam') {
+                elStatus.innerText = "NGÀY THI";
+                elStatus.style.backgroundColor = "var(--color-exam)";
+                elContent.innerHTML = `Môn thi: <strong>${todayData.info.name}</strong>. Cố lên!`;
+            }
+            else if (todayData.type === 'break' || todayData.type === 'review_exam') {
+                elStatus.innerText = "ÔN THI ĐẠI HỌC";
+                elStatus.style.backgroundColor = "var(--color-exam)";
+                elContent.innerHTML = "Ưu tiên việc học trên trường.";
+            }
+            else if (todayData.type === 'prep') {
+                elStatus.innerText = "CHUẨN BỊ";
+                elStatus.style.backgroundColor = "var(--color-prep)";
+                elStatus.style.color = "#000";
+                elContent.innerHTML = "Hãy cài đặt VS Code, Chrome và Node.js để sẵn sàng cho Thứ 7.";
+            }
+        }
+
+        // Hiện popup
+        setTimeout(() => {
+            modal.classList.add('active');
+        }, 800); // Delay nhẹ để web load xong mới hiện
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    /* * ==========================================================================
+     * PHẦN JS 5: TUYẾT RƠI (SNOWFALL ENGINE)
+     * ==========================================================================
+     */
+    function createSnowflakes() {
+        const container = document.getElementById('snow-container');
+        const flakeCount = 50; // Số lượng tuyết
+
+        for (let i = 0; i < flakeCount; i++) {
+            const flake = document.createElement('div');
+            flake.className = 'snowflake';
+            flake.innerHTML = '❄';
+            
+            // Random vị trí và kích thước
+            flake.style.left = Math.random() * 100 + 'vw';
+            flake.style.animationDuration = (Math.random() * 3 + 7) + 's, ' + (Math.random() * 2 + 2) + 's';
+            flake.style.fontSize = (Math.random() * 10 + 10) + 'px';
+            flake.style.animationDelay = (Math.random() * 5) + 's';
+            
+            container.appendChild(flake);
+        }
+    }
+
+    /* * ==========================================================================
+     * INIT APPLICATION
+     * ==========================================================================
+     */
+    
+    // Hiển thị ngày trên Header
+    document.getElementById('currentDateDisplay').innerText = TODAY.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+    // Chạy ứng dụng
+    renderCalendar();
+    createSnowflakes();
+    initStartupPopup(); // Gọi popup khi load xong
+
+</script>
+
+</body>
+</html>
